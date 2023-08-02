@@ -13,6 +13,13 @@ function Customersignup(){
     
     const[empty, setempty]= useState(false);
 
+    useEffect(()=>{
+        const auth = localStorage.getItem('customer');
+        if(auth){
+            navigate('/');
+        }
+    })
+
     const collectdata =async () => {
        if(!name || !email || !password){
             setempty(true);

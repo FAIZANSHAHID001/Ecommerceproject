@@ -15,6 +15,22 @@ function Productdetail(){
       
     
     },[]);
+    const addtocart=async(productid)=>{
+        const auth= localStorage.getItem('customer');
+        let customer_id= JSON.parse(auth)._id;
+        let product_id = productid
+        let result = await fetch('http://localhost:5000/addtocart', {
+            method: 'post',
+            body: JSON.stringify({ customer_id, product_id }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        result= await result.json();
+        if(result.customer_id){
+                alert("item added to cart");
+        }
+    }
 
     const settings = {
         dots: true,
@@ -87,7 +103,7 @@ function Productdetail(){
                        
                             <div class="d-flex align-items-center mb-4 pt-2">
                                
-                                <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To
+                                <button class="btn btn-primary px-3" onClick={()=>addtocart(productdetail._id)}><i class="fa fa-shopping-cart mr-1"></i> Add To
                                     Cart</button>
                             </div>
                             <div class="d-flex pt-2">

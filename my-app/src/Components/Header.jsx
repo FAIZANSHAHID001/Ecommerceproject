@@ -1,12 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
+import { useEffect, useState } from 'react';
 function Header(){
     const auth= localStorage.getItem('customer');
     const navigate= useNavigate();
+    const [cartcount, setCartcount]= useState(0);
     const logoutt=()=>{
      localStorage.clear();
    
+    }
+    useEffect(()=>{
+        getcartcount();
+    });
+    const getcartcount=async ()=>{
+        const auth= localStorage.getItem('customer');
+        let customer_id= JSON.parse(auth)._id;
+        let result=await fetch(`http://localhost:5000/countCartEntries/${customer_id}`);
+        result=await result.json();
+        setCartcount(result);
+        
     }
     return(
     <>
@@ -85,7 +98,7 @@ function Header(){
                             
                             <a href="" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle pb-2" >0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle pb-2" >{cartcount.count}</span>
                             </a>
                         </div>
                     </div>

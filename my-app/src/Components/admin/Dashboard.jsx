@@ -1,8 +1,82 @@
 import React from 'react';
 import {Link} from 'react-router-dom'
+import {useState ,useEffect} from 'react'
 import './adminpanel.css'
 
 function Dashboard(){
+    const [customerscount, setCustomercount] = useState('0');
+    const [ordercount, setOrdercount] = useState('0');
+    const [productcount, setProductcount] = useState('0');
+    const [orders,setOrders]=useState([]);
+    const [customers,setCustomers]=useState([]);
+
+
+
+
+
+    useEffect(()=>{
+        getcustomercount();
+        getordercount();
+        getproductcount();
+        getallorders();
+        getallcustomers();
+    });
+
+    const deleteorder=async(id)=>{
+       
+            let result= await fetch(`http://localhost:5000/deleteorder/${id}`,{
+                method: "Delete",
+    
+            });
+            result= await result.json();
+            if(result){
+               getallorders();
+            }
+    
+        
+    
+    }
+    const deletecustomer=async(id)=>{
+       
+        let result= await fetch(`http://localhost:5000/deletecustomer/${id}`,{
+            method: "Delete",
+
+        });
+        result= await result.json();
+        if(result){
+           getallcustomers();
+        }
+
+    
+
+}
+
+    const getallcustomers=async()=>{
+        let result=await fetch(`http://localhost:5000/allcustomers`);
+        result=await result.json();
+        setCustomers(result);
+    }
+    const getallorders=async()=>{
+        let result=await fetch(`http://localhost:5000/allorders`);
+        result=await result.json();
+        setOrders(result);
+    }
+    const getcustomercount=async()=>{
+        let result=await fetch(`http://localhost:5000/countcustomer`);
+        result=await result.json();
+        setCustomercount(result);
+    }
+    const getordercount=async()=>{
+        let result=await fetch(`http://localhost:5000/countorder`);
+        result=await result.json();
+        setOrdercount(result);
+    }
+    const getproductcount=async()=>{
+        let result=await fetch(`http://localhost:5000/countproduct`);
+        result=await result.json();
+        setProductcount(result);
+    }
+    
     return (
         <div className='dashboard'>
             <div className='container mt-4'>
@@ -12,7 +86,7 @@ function Dashboard(){
                             <div className='row'>
                                 <div className='col-8 '>
                                    <h5>Customers</h5>
-                                   <h5>150</h5>
+                                   <h5>{customerscount.count}</h5>
                                 </div>
                                 <div className='col-4 d-flex justify-content-center'>
                                 <img width="60" height="60" src="https://img.icons8.com/color/96/male-female-user-group.png" alt="male-female-user-group"/>                                </div>
@@ -24,7 +98,7 @@ function Dashboard(){
                             <div className='row'>
                                 <div className='col-8 '>
                                    <h5>Products</h5>
-                                   <h5>72</h5>
+                                   <h5>{productcount.count}</h5>
                                 </div>
                                 <div className='col-4 d-flex justify-content-center'>
                                 <img width="60" height="60" src="https://img.icons8.com/stickers/100/products-pile.png" alt="products-pile"/>
@@ -37,7 +111,7 @@ function Dashboard(){
                             <div className='row'>
                                 <div className='col-8 '>
                                    <h5>Sales</h5>
-                                   <h5>12</h5>
+                                   <h5>{ordercount.count}</h5>
                                 </div>
                                 <div className='col-4 d-flex justify-content-center'>
                                 <img width="60" height="60" src="https://img.icons8.com/color/96/total-sales-1.png" alt="total-sales-1"/>                                </div>
@@ -66,42 +140,42 @@ function Dashboard(){
                     <table>
                                         <thead>
                                         <tr>
-                                        <th scope="col">Product </th>
-                                        <th scope="col">Items </th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Revenue</th>
-                                        <th scope="col">Profit</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Location </th>
+                                        <th scope="col">Contact</th>
+                                        <th scope="col">Amount</th>
+                                        <th scope="col">Action</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                        <td data-label="Account">Water Bottle</td>
-                                        <td data-label="Due Date">500</td>
-                                        <td data-label="Amount">$50</td>
-                                        <td data-label="Period">$100</td>
-                                        <td data-label="Period">$50</td>
-                                        </tr>
-                                        <tr>
-                                        <td scope="row" data-label="Account">Glass jar</td>
-                                        <td data-label="Due Date">700</td>
-                                        <td data-label="Amount">$2,443</td>
-                                        <td data-label="Period">$3,000</td>
-                                        <td data-label="Period">$700</td>
-                                        </tr>
-                                        <tr>
-                                        <td scope="row" data-label="Account">Bamboo sticks</td>
-                                        <td data-label="Due Date">1000</td>
-                                        <td data-label="Amount">$1,181</td>
-                                        <td data-label="Period">$2,000</td>
-                                        <td data-label="Period">$800</td>
-                                        </tr>
-                                        <tr>
-                                        <td scope="row" data-label="Acount">Lunch Box</td>
-                                        <td data-label="Due Date">5000</td>
-                                        <td data-label="Amount">$842</td>
-                                        <td data-label="Period">$1,000</td>
-                                        <td data-label="Period">$100</td>
-                                        </tr>
+                                        { (orders && orders.length > 0 ) ?
+                                            orders.map((item) =>
+                                            <tr>
+                                            <td data-label="Account">{item.firstname}</td>
+                                            <td data-label="Due Date">{item.city}</td>
+                                            <td data-label="Amount">{item.number}</td>
+                                            <td data-label="Period">{item.totalamount}</td>
+                                            <td data-label="Period"><button className='dashboard-delete ml-2' onClick={()=>deleteorder(item._id)}>Delete</button></td>
+                                            </tr>
+                                    )
+                                    :
+                                    <tr>
+                                            
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                </tr>
+                                   
+                                   
+
+                                }
+                                    
+                                       
+                                       
                                         </tbody>
                     </table>  
 
@@ -116,27 +190,30 @@ function Dashboard(){
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                        <td data-label="Account">1</td>
-                                        <td data-label="Due Date">Asad Ahmad</td>
-                                        <td data-label="Amount">test@test.com</td>
-                                        <td data-label="Period"><Link className='action-button'><i class="fa fa-trash" aria-hidden="true"></i> Remove </Link></td>
+                                        { (customers && customers.length > 0 ) ?
+                                            customers.map((item) =>
+                                            <tr>
+                                            <td data-label="Account">{item.name}</td>
+                                            <td data-label="Due Date">{item.email}</td>
+                                            <td data-label="Amount">{item.password}</td>
+                                            <td data-label="Period"><Link className='action-button' onClick={()=>deletecustomer(item._id)}><i class="fa fa-trash" aria-hidden="true"></i> Remove </Link></td>
+                                           
+                                            </tr>
+                                    )
+                                    :
+                                    <tr>
+                                            
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
+                                </tr>
+}
+                                      
                                        
-                                        </tr>
-                                        <tr>
-                                        <td data-label="Account">1</td>
-                                        <td data-label="Due Date">Asad Ahmad</td>
-                                        <td data-label="Amount">test@test.com</td>
-                                        <td data-label="Period"><Link className='action-button'><i class="fa fa-trash" aria-hidden="true"></i> Remove </Link></td>
-                                       
-                                        </tr>
-                                        <tr>
-                                        <td data-label="Account">1</td>
-                                        <td data-label="Due Date">Asad Ahmad</td>
-                                        <td data-label="Amount">test@test.com</td>
-                                        <td data-label="Period"><Link className='action-button'><i class="fa fa-trash" aria-hidden="true"></i> Remove </Link></td>
-                                       
-                                        </tr>
                                         
                                      
                                         </tbody>
@@ -146,16 +223,12 @@ function Dashboard(){
                         <div className='list-card'>
                             <h4><img width="50" height="50" src="https://img.icons8.com/nolan/64/bulleted-list.png" alt="bulleted-list"/> Categories</h4>
                             <ul>
-                                <Link to="" className='add-category'><li><i class="fa fa-plus" aria-hidden="true"></i> Add Category</li></Link>
-                                <li>Electronics</li>
-                                <li>Clothing</li>
-                                <li>Boys</li>
-                                <li>Girls</li>
-                                <li>Electronics</li>
-                                <li>Clothing</li>
-                                <li>Boys</li>
-                                <li>Girls</li>
-                                <li>Electronics</li>
+                               
+                                <li>Men Clothing</li>
+                                <li>Women Clothing</li>
+                                <li>Fragnances</li>
+                                <li>Shoes</li>
+                                
                                
                             </ul>
                         </div>

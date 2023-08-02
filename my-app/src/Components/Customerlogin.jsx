@@ -11,28 +11,33 @@ function Customerlogin(){
     const[password,setpassword]= useState("");
     const[error, seterror]= useState(false);
     const[empty, setempty]= useState(false);
-
+    useEffect(()=>{
+        const auth = localStorage.getItem('customer');
+        if(auth){
+            navigate('/');
+        }
+    })
     const getdata=async ()=>{
 
-    //     if(!email || !password ){
-    //         setempty(true);
-    //         return false;
-    //     }
-    //     let result=await fetch('http://localhost:5000/login',{
-    //         method: 'POST',
-    //         body: JSON.stringify({email,password}),
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         } ,
-    //     });
-    //     result=await result.json();
-    //    if(result.email){
-    //             localStorage.setItem("user", JSON.stringify(result));
-    //             navigate('/admin');
-    //    }
-    //    else{
-    //          seterror(true);
-    //    }
+        if(!email || !password ){
+            setempty(true);
+            return false;
+        }
+        let result=await fetch('http://localhost:5000/customerlogin',{
+            method: 'POST',
+            body: JSON.stringify({email,password}),
+            headers: {
+                'Content-Type': 'application/json'
+            } ,
+        });
+        result=await result.json();
+       if(result.email){
+                localStorage.setItem("customer", JSON.stringify(result));
+                navigate('/');
+       }
+       else{
+             seterror(true);
+       }
     }
     return(
         <div className='customerlogin'>

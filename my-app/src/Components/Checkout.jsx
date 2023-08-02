@@ -3,13 +3,15 @@ import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 function Checkout() {
 
-    const [fname, setFname] = useState("");
-    const [lname, setLname] = useState("");
+    const [firstname, setFname] = useState("");
+    const [lastname, setLname] = useState("");
     const [email, setEmail] = useState("");
     const [number, setNumber] = useState("");
     const [address, setAddress] = useState("");
     const [city, setCity]= useState("");
+    const [product_id, setProduct_id]= useState([]);
     const [orderstatus, setOrderstatus]= useState(false);
+    const [error, setError] = useState(false);
 
     useEffect(()=>{
        
@@ -40,23 +42,35 @@ function Checkout() {
       
        
     }
-    const formData = new FormData();
-    formData.append('firstname', fname);
-    formData.append('lastname', lname);
-    formData.append('email', email);
-    formData.append('number', number);
-    formData.append('address', address);
-    formData.append('city', city);
+   
 
     const placeorder=async()=>{
-        const auth= localStorage.getItem('customer');
-        let customer_name= JSON.parse(auth).name;
-        let result= await fetch(`http://localhost:5000/placeorder/${customer_name}`,{
-            method: 'POST',
-            body: formData,
+        // const formData = new FormData();
+        // formData.append('firstname', fname);
+        // formData.append('lastname', lname);
+        // formData.append('email', email);
+        // formData.append('number', number);
+        // formData.append('address', address);
+        // formData.append('city', city);
+        if(!firstname || !lastname || !email || !number || !address || !city){
+            setError(true);
+            return false;
+        }
+          const auth= localStorage.getItem('customer');
+        const copiedarray = [...items];
+          setProduct_id(copiedarray);
+          let customer_id= JSON.parse(auth)._id;
+        
+        let result= await fetch(`http://localhost:5000/placeorder`,{
+            method: 'post',
+            body: JSON.stringify({ firstname,lastname, email,number, address, city , product_id , customer_id, totalamount }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
         });
         if(result){
             setOrderstatus(true);
+            setError(false)
         }
     }
 
@@ -82,32 +96,45 @@ function Checkout() {
                     </div>
                 </div>
             </div>
-
+           
             <div class="container-fluid">
+
         <div class="row px-xl-5">
+            
             <div class="col-lg-8">
+                {
+                    error && <div class="alert alert-danger" role="alert">
+                    Fill this form first!!
+                                    </div>
+                }
+                {
+                    orderstatus &&  <div class="alert alert-success" role="alert">
+                    Congratulations! your order has been placed
+                                    </div>
+                }
+           
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Billing Address</span></h5>
                 <div class="bg-light p-30 mb-5">
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label>First Name</label>
-                            <input class="form-control" type="text" placeholder="John"/>
+                            <input class="form-control" type="text" placeholder="John" onChange={((e)=>setFname(e.target.value))} value={firstname}/>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Last Name</label>
-                            <input class="form-control" type="text" placeholder="Doe"/>
+                            <input class="form-control" type="text" placeholder="Doe" onChange={((e)=>setLname(e.target.value))} value={lastname}/>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>E-mail</label>
-                            <input class="form-control" type="text" placeholder="example@email.com"/>
+                            <input class="form-control" type="text" placeholder="example@email.com" onChange={((e)=>setEmail(e.target.value))} value={email}/>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Mobile No</label>
-                            <input class="form-control" type="text" placeholder="+123 456 789"/>
+                            <input class="form-control" type="text" placeholder="+123 456 789" onChange={((e)=>setNumber(e.target.value))} value={number}/>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Address Line 1</label>
-                            <input class="form-control" type="text" placeholder="123 Street"/>
+                            <input class="form-control" type="text" placeholder="123 Street" onChange={((e)=>setAddress(e.target.value))} value={address}/>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Address Line 2</label>
@@ -124,7 +151,7 @@ function Checkout() {
                         </div>
                         <div class="col-md-6 form-group">
                             <label>City</label>
-                            <input class="form-control" type="text" placeholder="New York"/>
+                            <input class="form-control" type="text" placeholder="New York" onChange={((e)=>setCity(e.target.value))} value={city}/>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>State</label>
@@ -198,7 +225,7 @@ function Checkout() {
                                 <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
                             </div>
                         </div>
-                        <button class="btn btn-block btn-primary font-weight-bold py-3">Place Order</button>
+                        <button class="btn btn-block btn-primary font-weight-bold py-3" onClick={()=>placeorder()}>Place Order</button>
                     </div>
                 </div>
             </div>

@@ -90,7 +90,7 @@ function Cart() {
                              ( items && items.length > 0) ?
                              items.map((item) =>
                              <tr>
-                             <td class="align-middle"><img className="cart-img" src="img/product-1.jpg" alt=""/> {item.product_name}</td>
+                             <td class="align-middle"><img className="cart-img" src={require(`../images/${item.imagepath[0].replace('..\\my-app\\src\\images\\', '')}`)}  alt=""/>   {item.product_name}</td>
                              <td class="align-middle">$ {item.price}</td>
                            
                              <td class="align-middle"> $ {item.price}</td>

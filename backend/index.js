@@ -6,6 +6,7 @@ const User= require("./database/User");
 const Product = require("./database/Product");
 const Customer = require("./database/Customer");
 const Cart= require("./database/Cart");
+const Order = require("./database/Order");
 const bodyParser = require('body-parser');
 const path= require('path');
 const multer = require('multer');
@@ -53,6 +54,47 @@ app.post("/addtocart", async (req,res)=>{
     
     res.send(result);
 })
+
+app.get('/countCartEntries/:customer_id', async (req, res) => {
+    const customer_id = req.params.customer_id;
+      const count = await Cart.countDocuments({ customer_id });
+      res.json({ count });
+  
+  });
+
+  app.get('/countcustomer', async (req, res) => {
+      const count = await Customer.countDocuments();
+      res.json({ count });
+  
+  });
+  app.get('/countorder', async (req, res) => {
+      const count = await Order.countDocuments();
+      res.json({ count });
+  
+  });
+  app.get('/countproduct', async (req, res) => {
+      const count = await Product.countDocuments();
+      res.json({ count });
+  
+  });
+
+  app.get('/allorders', async (req, res) => {
+    const result= await Order.find();
+    res.send(result);
+
+});
+
+app.get('/allcustomers', async (req, res) => {
+    const result= await Customer.find();
+    res.send(result);
+
+});
+app.post("/placeorder", async (req,res)=>{
+    let order= new Order(req.body);
+    let result = await order.save();
+    
+    res.send(result);
+})
  app.get("/getcart/:id", async(req,res)=>{
     let result= await Cart.find({customer_id: req.params.id});
     if(result){
@@ -78,6 +120,21 @@ app.post("/login",async (req, res)=>{
     }
 })
 
+
+app.post("/customerlogin",async (req, res)=>{
+    if(req.body.email && req.body.password){
+        let user= await Customer.findOne(req.body).select("-password");
+        if(user){
+            res.send(user);
+        }
+        else{
+            res.send({result:"No user found"});
+        }   
+    }
+    else{
+        res.send({result:"Something is missing"});
+    }
+})
 app.post("/add-product",upload, async(req,res)=>{
     const productdata = req.body;
     const imagepaths = req.files.map((file) => file.path); 
@@ -99,6 +156,15 @@ app.get("/getproducts",async(req,res)=>{
 })
 app.delete("/delete/:id",async (req,res)=>{
     let result=await Product.deleteOne({_id:req.params.id});
+    res.send(result);
+});
+
+app.delete("/deleteorder/:id",async (req,res)=>{
+    let result=await Order.deleteOne({_id:req.params.id});
+    res.send(result);
+});
+app.delete("/deletecustomer/:id",async (req,res)=>{
+    let result=await Customer.deleteOne({_id:req.params.id});
     res.send(result);
 });
 app.delete("/deletecartitem/:id",async (req,res)=>{

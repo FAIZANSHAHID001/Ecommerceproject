@@ -215,6 +215,28 @@ table {
   }
   
 .dashboard{
+    .dashboard-view{
+        background-color: green;
+    border: none;
+    color: white;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    }
+    .dashboard-delete{
+        background-color: red;
+    border: none;
+    color: white;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    }
     .info-card{
        
         border-radius: 10px;
